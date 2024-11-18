@@ -1,0 +1,40 @@
+# Enable mod_rewrite
+RewriteEngine On
+
+# Set home.html as the default landing page
+DirectoryIndex home.html
+
+# Remove .html extension from URLs
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^([^/]+)$ $1.html [L]
+
+# Redirect root URL or index.html to home.html
+RewriteCond %{REQUEST_URI} ^/$ [OR]
+RewriteCond %{REQUEST_URI} ^/index\.html$ [NC]
+RewriteRule ^$ /home.html [L,R=301]
+
+# Force HTTPS (Optional)
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Redirect www to non-www (Optional)
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# Prevent access to .htaccess file
+<Files ".htaccess">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Disable directory browsing
+Options -Indexes
+
+# Custom 404 Error Page (Optional)
+ErrorDocument 404 /404.html
+
+# Enable Caching for HTML files (Optional)
+<FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "max-age=86400, public"
+</FilesMatch>
